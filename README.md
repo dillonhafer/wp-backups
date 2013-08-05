@@ -5,7 +5,7 @@ WordPress Backups
 About
 -----
 
-This is a simple Rakefile for automatic database and file backups, and an easy way to restore backups too.
+This is a simple Rakefile for automatic database and file backups, and an easy way to restore backups too. It looks at wp-config.php for the database configuration needed.
 
 It does four things:
 
