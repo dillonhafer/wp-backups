@@ -5,16 +5,12 @@ WordPress Database
 About
 -----
 
-This is a simple Rakefile for automatic database backups, and an easy way to restore backups. This only works with Bluehost accounts.
+This is a simple Rakefile for automatic database backups, and an easy way to restore backups.
 
 Setup
 -----
 
-For this app to function in the Rakefile in this project needs to be copied to the home directory on bluehost:
-
-```bash
-scp Rakefile user@bluehost:
-```
+Simply FTP the Rakefile to the site's root directory of your WordPress install.
 
 Rake Tasks
 ----------
@@ -46,8 +42,8 @@ crontab -e
 **Crontab format**
 
 ```bash
-0 1 * * * `which rake` wp:backup:daily
-0 2 * * 0 `which rake` wp:backup:weekly
+0 0 * * * cd /path/to/wordpress/site /path/to/rake && wp:backup:daily
+0 1 * * 0 cd /path/to/wordpress/site /path/to/rake && wp:backup:weekly
 ```
 
 Copyright
