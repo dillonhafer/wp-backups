@@ -40,7 +40,7 @@ crontab -e
 **Crontab format**
 
 ```bash
-0 0 * * 0 rake bw:backup:create
+0 0 * * 0 rake wp:backup:create
 ```
 
 Copyright
