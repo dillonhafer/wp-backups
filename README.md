@@ -19,8 +19,6 @@ scp Rakefile user@bluehost:
 Rake Tasks
 ----------
 
-There are a number of rake tasks available to aid development and testing.
-
 **Creates a new backup.**
 
 ```bash
@@ -35,7 +33,9 @@ rake wp:backup:restore
 
 **Setup weekly crontab**
 
+```bash
 TODO
+```
 
 Copyright
 ---------
