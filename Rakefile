@@ -114,9 +114,9 @@ namespace :wp do
     end
 
     desc "Restore latest backup"
-    task :restore do
+    task :restore_yesterday do
       # Get the latest file by date
-      latest_backup = Dir.glob('~/wp-backups/backups/*.sql').last      
+      latest_backup = Dir.glob('wp-backups/daily/*.sql').last      
       puts "  ** Restoring to latest backup".green + " (#{latest_backup})".yellow + " ...".green
       `mysql -u #{db_user} -p'#{db_password}' #{db_name} < #{latest_backup}`
       puts "Restore complete!".pink
