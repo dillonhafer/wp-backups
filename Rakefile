@@ -21,68 +21,96 @@ class String
   end
 end
 
+def db_dump(config)
+  command_to_run = "mysqldump -u #{config[:db_user]} -p'#{config[:db_password]}' #{config[:db_name]} > wp-backups/daily/#{config[:time]}.sql"
+  puts "  ** Creating backup...".green
+  puts "  ** Command:".yellow + " #{command_to_run}"
+  `#{command_to_run}`
+  puts "  ** Finished".green
+end
+
+def zip_site(config)
+  command_to_run = "tar -zcvf wp-backups/daily/#{config[:time]}.tar.gz ."
+  puts "  ** Zipping site folder".green
+  puts "  ** Command:".yellow + " #{command_to_run}"
+  `#{command_to_run}`
+  puts "  ** Finished".green
+end
+
+def check_for_directory(directory)
+  puts "  ** Checking for backup directories...".yellow
+  unless File.directory?("wp-backups/#{directory}")
+    puts "The directory 'wp-backups/#{directory}' does not exists. Creating directory 'wp-backups/#{directory}'".red
+    `mkdir -p wp-backups/#{directory}`
+  end
+  puts "  ** Finished".green
+end
+
+def keep_last_five(directory)
+  puts "  ** Cleaning up backups...".yellow
+  %x{ls -1dt wp-backups/#{directory}/*.sql | tail -n +6 |  xargs rm -rf}      
+  %x{ls -1dt wp-backups/#{directory}/*.tar.gz | tail -n +6 |  xargs rm -rf}      
+  puts "  ** Finished".green  
+end
+
+def create_htaccess
+  unless File.exist?('wp-backups/.htaccess')
+    puts "  ** Generating htaccess file".green
+    `echo "Options -Indexes" > wp-backups/.htaccess`
+  end
+end
+
+def weekly_copy
+  db_command_to_run = "cp \`ls -1rt wp-backups/daily/*.sql | tail -n -1\` wp-backups/weekly"
+  gz_command_to_run = "cp \`ls -1rt wp-backups/daily/*.tar.gz | tail -n -1\` wp-backups/weekly"
+  puts "  ** Creating backups...".green
+  puts "  ** Command:".yellow + " #{db_command_to_run}"
+  `#{db_command_to_run}`
+  puts "  ** Command:".yellow + " #{gz_command_to_run}"
+  `#{gz_command_to_run}`
+end  
+
 namespace :wp do
 
   namespace :backup do
 
     # Generate config variables by reading the wordpress config file
-    CONFIG  = File.read("wp-config.php")
-    DB_NAME = /DB_NAME', '([^']+)'/.match(CONFIG)[1].chomp
-    DB_USER = /DB_USER', '([^']+)'/.match(CONFIG)[1].chomp
-    DB_PASSWORD = /DB_PASSWORD', '([^']+)'/.match(CONFIG)[1].chomp
-    COMMAND_TIME = Time.now.strftime("%Y%m%d%H%M%S")
+    config = {}
 
-    dump_command = "mysqldump -u #{DB_USER} -p'#{DB_PASSWORD}' #{DB_NAME} > wp-backups/backups/#{COMMAND_TIME}.sql"
+    wp_config            = File.read("wp-config.php")    
+    config[:db_name]     = /DB_NAME', '([^']+)'/.match(wp_config)[1]
+    config[:db_user]     = /DB_USER', '([^']+)'/.match(wp_config)[1]
+    config[:db_password] = /DB_PASSWORD', '([^']+)'/.match(wp_config)[1]
+    config[:time]        = Time.now.strftime("%Y%m%d%H%M%S")
     
     desc "Create a daily backup of WordPress"
-    task :daily do      
+    task :daily do
       # Check for backup directories and create them if they don't exist
-      unless File.directory?('wp-backups/daily')
-        puts "The directory 'wp-backups/daily' does not exists. Creating directory 'wp-backups/daily'".red
-        `mkdir -p wp-backups/daily`
-      end
+      check_for_directory('daily')
       
       # Dump the database
-      puts "  ** Creating backup...".green
-      puts "  ** Command:".yellow + " #{dump_command}"
-      `mysqldump -u #{DB_USER} -p'#{DB_PASSWORD}' #{DB_NAME} > wp-backups/daily/#{Time.now.strftime("%Y%m%d%H%M%S")}.sql`
+      db_dump(config)
       
       # Zip site folder
-      puts "  ** Zipping site folder".green
-      puts "  **  Command:".yellow + " tar -zcvf wp-backups/daily/#{COMMAND_TIME}.tar.gz ."
-      `tar -zcvf wp-backups/daily/#{COMMAND_TIME}.tar.gz .`
+      zip_site(config)
 
       # Keeping only last 5 backups
-      puts "  ** Cleaning up backups...".yellow
-      %x{ls -1dt wp-backups/daily/*.sql | tail -n +6 |  xargs rm -rf}      
-      %x{ls -1dt wp-backups/daily/*.tar.gz | tail -n +6 |  xargs rm -rf}      
-      puts "Backup complete!".pink
-
-      # Deny directory listing apache      
-      puts "  ** Generating htaccess file".green
-      `echo "Options -Indexes" > wp-backups/.htaccess`
+      keep_last_five('daily')
+         
+      # Deny directory listing for apache      
+      create_htaccess
     end   
 
     desc "Create a weekly backup of WordPress"
     task :weekly do
       # Check for backup directories and create them if they don't exist
-      unless File.directory?('wp-backups/weekly')
-        puts "The directory 'wp-backups/weekly' does not exists. Creating directory 'wp-backups/weekly'".red
-        `mkdir -p wp-backups/weekly`
-      end
+      check_for_directory('weekly')
 
       # Copy the latest daily backup to the weekly folder
-      puts "  ** Creating backup...".green
-      puts "  ** Command:".yellow + " ls -1rt wp-backups/daily/*.sql | tail -n -1"
-      `cp \`ls -1rt wp-backups/daily/*.sql | tail -n -1\` wp-backups/weekly`
-      puts "  ** Command:".yellow + " ls -1rt wp-backups/daily/*.tar.gz | tail -n -1"
-      `cp \`ls -1rt wp-backups/daily/*.tar.gz | tail -n -1\` wp-backups/weekly`
+      weekly_copy
       
       # Keeping only last 5 backups
-      puts "  ** Cleaning up backups...".yellow
-      %x{ls -1dt wp-backups/weekly/*.sql | tail -n +6 |  xargs rm -rf}      
-      %x{ls -1dt wp-backups/weekly/*.tar.gz | tail -n +6 |  xargs rm -rf}      
-      puts "Backup complete!".pink
+      keep_last_five('weekly')
     end
 
     desc "Restore latest backup"
@@ -90,7 +118,7 @@ namespace :wp do
       # Get the latest file by date
       latest_backup = Dir.glob('~/wp-backups/backups/*.sql').last      
       puts "  ** Restoring to latest backup".green + " (#{latest_backup})".yellow + " ...".green
-      #`mysql -u #{DB_USER} -p'#{DB_PASSWORD}' #{DB_NAME} < #{latest_backup}`
+      `mysql -u #{db_user} -p'#{db_password}' #{db_name} < #{latest_backup}`
       puts "Restore complete!".pink
     end    
   end
