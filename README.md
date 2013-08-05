@@ -7,10 +7,17 @@ About
 
 This is a simple Rakefile for automatic database and file backups, and an easy way to restore backups too.
 
+It does four things:
+
+1. Create a MySQL dump into wp-backup/daily directory.
+2. Create a .tar.gz file of the site into wp-backup/daily directory.
+3. The weekly task copies the latest .sql file and .tar.gz file from the daily directory into the weekly directory.
+4. Keeps only the last five backups in daily and weekly folders.
+
 Setup
 -----
 
-Simply FTP the Rakefile to the site's root directory of your WordPress install.
+Simply FTP the Rakefile to the site's root directory of your WordPress install. From there you can run the tasks manually, but it's best to set up a cron for daily and weekly backups.
 
 Rake Tasks
 ----------
