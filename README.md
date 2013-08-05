@@ -19,10 +19,16 @@ scp Rakefile user@bluehost:
 Rake Tasks
 ----------
 
-**Creates a new backup.**
+**Creates a daily backup.**
 
 ```bash
-rake wp:backup:create
+rake wp:backup:daily
+```
+
+**Creates a weekly backup.**
+
+```bash
+rake wp:backup:weekly
 ```
 
 **Restores database to latest backup.**
@@ -31,7 +37,7 @@ rake wp:backup:create
 rake wp:backup:restore
 ```
 
-**Setup weekly crontab**
+**Setup weekly/daily crontab**
 
 ```bash
 crontab -e
@@ -40,7 +46,8 @@ crontab -e
 **Crontab format**
 
 ```bash
-0 0 * * 0 rake wp:backup:create
+0 1 * * * `which rake` wp:backup:daily
+0 2 * * 0 `which rake` wp:backup:weekly
 ```
 
 Copyright

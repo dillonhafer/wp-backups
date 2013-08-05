@@ -32,7 +32,7 @@ namespace :wp do
     DB_PASSWORD = /DB_PASSWORD', '([^']+)'/.match(CONFIG)[1].chomp
     COMMAND_TIME = Time.now.strftime("%Y%m%d%H%M%S")
 
-    dump_command = "mysqldump -u #{DB_USER} -p#{DB_PASSWORD} #{DB_NAME} > wp-backups/backups/#{COMMAND_TIME}.sql"
+    dump_command = "mysqldump -u #{DB_USER} -p'#{DB_PASSWORD}' #{DB_NAME} > wp-backups/backups/#{COMMAND_TIME}.sql"
     
     desc "Create a daily backup of WordPress"
     task :daily do      
@@ -45,11 +45,17 @@ namespace :wp do
       # Dump the database
       puts "  ** Creating backup...".green
       puts "  ** Command:".yellow + " #{dump_command}"
-      `mysqldump -u #{DB_USER} -p#{DB_PASSWORD} #{DB_NAME} > wp-backups/daily/#{Time.now.strftime("%Y%m%d%H%M%S")}.sql`
+      `mysqldump -u #{DB_USER} -p'#{DB_PASSWORD}' #{DB_NAME} > wp-backups/daily/#{Time.now.strftime("%Y%m%d%H%M%S")}.sql`
       
+      # Zip site folder
+      puts "  ** Zipping site folder".green
+      puts "  **  Command:".yellow + " tar -zcvf wp-backups/daily/#{COMMAND_TIME}.tar.gz ."
+      `tar -zcvf wp-backups/daily/#{COMMAND_TIME}.tar.gz .`
+
       # Keeping only last 5 backups
       puts "  ** Cleaning up backups...".yellow
       %x{ls -1dt wp-backups/daily/*.sql | tail -n +6 |  xargs rm -rf}      
+      %x{ls -1dt wp-backups/daily/*.tar.gz | tail -n +6 |  xargs rm -rf}      
       puts "Backup complete!".pink
 
       # Deny directory listing apache      
@@ -69,10 +75,13 @@ namespace :wp do
       puts "  ** Creating backup...".green
       puts "  ** Command:".yellow + " ls -1rt wp-backups/daily/*.sql | tail -n -1"
       `cp \`ls -1rt wp-backups/daily/*.sql | tail -n -1\` wp-backups/weekly`
+      puts "  ** Command:".yellow + " ls -1rt wp-backups/daily/*.tar.gz | tail -n -1"
+      `cp \`ls -1rt wp-backups/daily/*.tar.gz | tail -n -1\` wp-backups/weekly`
       
       # Keeping only last 5 backups
       puts "  ** Cleaning up backups...".yellow
       %x{ls -1dt wp-backups/weekly/*.sql | tail -n +6 |  xargs rm -rf}      
+      %x{ls -1dt wp-backups/weekly/*.tar.gz | tail -n +6 |  xargs rm -rf}      
       puts "Backup complete!".pink
     end
 
@@ -81,7 +90,7 @@ namespace :wp do
       # Get the latest file by date
       latest_backup = Dir.glob('~/wp-backups/backups/*.sql').last      
       puts "  ** Restoring to latest backup".green + " (#{latest_backup})".yellow + " ...".green
-      #`mysql -u #{DB_USER} -p#{DB_PASSWORD} #{DB_NAME} < #{latest_backup}`
+      #`mysql -u #{DB_USER} -p'#{DB_PASSWORD}' #{DB_NAME} < #{latest_backup}`
       puts "Restore complete!".pink
     end    
   end
