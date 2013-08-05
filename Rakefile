@@ -68,13 +68,21 @@ def weekly_copy
   `#{db_command_to_run}`
   puts "  ** Command:".yellow + " #{gz_command_to_run}"
   `#{gz_command_to_run}`
-end  
+end
+
+def restore_latest(config, latest_backup)
+  latest_backup = `ls -1rt wp-backups/daily/*.sql | tail -n -1`.chomp
+  command_to_run = "mysql -u #{config[:db_user]} -p'#{config[:db_password]}' #{config[:db_name]} < #{latest_backup}"
+  puts "  ** Restoring to latest backup".green + " (#{latest_backup}): #{command_to_run}".yellow + " ...".green
+  `#{command_to_run}`
+  puts "  ** Finished".green
+end
 
 namespace :wp do
   # Generate config variables by reading the wordpress config file
   config = {}
 
-  wp_config            = File.read("wp-config.php")    
+  wp_config            = File.read("wp-config.php")
   config[:db_name]     = /DB_NAME', '([^']+)'/.match(wp_config)[1]
   config[:db_user]     = /DB_USER', '([^']+)'/.match(wp_config)[1]
   config[:db_password] = /DB_PASSWORD', '([^']+)'/.match(wp_config)[1]
@@ -85,19 +93,19 @@ namespace :wp do
     task :daily do
       # Check for backup directories and create them if they don't exist
       check_for_directory('daily')
-      
+
       # Dump the database
       db_dump(config)
-      
+
       # Zip site folder
       zip_site(config)
 
       # Keeping only last 5 backups
       keep_last_five('daily')
-         
-      # Deny directory listing for apache      
+
+      # Deny directory listing for apache
       create_htaccess
-    end   
+    end
 
     desc "Create a weekly backup of WordPress"
     task :weekly do
@@ -106,7 +114,7 @@ namespace :wp do
 
       # Copy the latest daily backup to the weekly folder
       weekly_copy
-      
+
       # Keeping only last 5 backups
       keep_last_five('weekly')
     end
@@ -115,12 +123,7 @@ namespace :wp do
   namespace :restore do
     desc "Restore latest backup"
     task :latest do
-      # Get the latest file by date
-      latest_backup = `ls -1rt wp-backups/daily/*.sql | tail -n -1`.chomp 
-      puts "  ** Restoring to latest backup".green + " (#{latest_backup})".yellow + " ...".green
-      `mysql -u #{config[:db_user]} -p'#{config[:db_password]}' #{config[:db_name]} < #{latest_backup}`
-      puts "Restore complete!".pink
-    end    
-  end    
-
+      restore_latest(config)
+    end
+  end
 end
