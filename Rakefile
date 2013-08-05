@@ -71,18 +71,16 @@ def weekly_copy
 end  
 
 namespace :wp do
+  # Generate config variables by reading the wordpress config file
+  config = {}
+
+  wp_config            = File.read("wp-config.php")    
+  config[:db_name]     = /DB_NAME', '([^']+)'/.match(wp_config)[1]
+  config[:db_user]     = /DB_USER', '([^']+)'/.match(wp_config)[1]
+  config[:db_password] = /DB_PASSWORD', '([^']+)'/.match(wp_config)[1]
+  config[:time]        = Time.now.strftime("%Y%m%d%H%M%S")
 
   namespace :backup do
-
-    # Generate config variables by reading the wordpress config file
-    config = {}
-
-    wp_config            = File.read("wp-config.php")    
-    config[:db_name]     = /DB_NAME', '([^']+)'/.match(wp_config)[1]
-    config[:db_user]     = /DB_USER', '([^']+)'/.match(wp_config)[1]
-    config[:db_password] = /DB_PASSWORD', '([^']+)'/.match(wp_config)[1]
-    config[:time]        = Time.now.strftime("%Y%m%d%H%M%S")
-    
     desc "Create a daily backup of WordPress"
     task :daily do
       # Check for backup directories and create them if they don't exist
@@ -112,15 +110,17 @@ namespace :wp do
       # Keeping only last 5 backups
       keep_last_five('weekly')
     end
+  end
 
+  namespace :restore do
     desc "Restore latest backup"
-    task :restore_yesterday do
+    task :yesterday do
       # Get the latest file by date
       latest_backup = Dir.glob('wp-backups/daily/*.sql').last      
       puts "  ** Restoring to latest backup".green + " (#{latest_backup})".yellow + " ...".green
-      `mysql -u #{db_user} -p'#{db_password}' #{db_name} < #{latest_backup}`
+      `mysql -u #{config[:db_user]} -p'#{config[:db_password]}' #{config[:db_name]} < #{latest_backup}`
       puts "Restore complete!".pink
     end    
-  end
+  end    
 
 end
