@@ -48,8 +48,8 @@ end
 
 def keep_last_five(directory)
   puts "  ** Cleaning up backups...".yellow
-  %x{ls -1dt wp-backups/#{directory}/*.sql | tail -n +6 |  xargs rm -rf}      
-  %x{ls -1dt wp-backups/#{directory}/*.tar.gz | tail -n +6 |  xargs rm -rf}      
+  `ls -1dt wp-backups/#{directory}/*.sql | tail -n +6 |  xargs rm -rf`
+  `ls -1dt wp-backups/#{directory}/*.tar.gz | tail -n +6 |  xargs rm -rf`
   puts "  ** Finished".green  
 end
 
@@ -116,7 +116,7 @@ namespace :wp do
     desc "Restore latest backup"
     task :latest do
       # Get the latest file by date
-      latest_backup = Dir.glob('wp-backups/daily/*.sql').last      
+      latest_backup = `ls -1rt wp-backups/daily/*.sql | tail -n -1`.chomp 
       puts "  ** Restoring to latest backup".green + " (#{latest_backup})".yellow + " ...".green
       `mysql -u #{config[:db_user]} -p'#{config[:db_password]}' #{config[:db_name]} < #{latest_backup}`
       puts "Restore complete!".pink
