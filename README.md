@@ -34,7 +34,12 @@ rake wp:backup:restore
 **Setup weekly crontab**
 
 ```bash
-TODO
+crontab -e
+```
+
+**Crontab format**
+```bash
+0 0 * * 0 rake bw:backup:create
 ```
 
 Copyright
