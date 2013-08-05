@@ -48,7 +48,7 @@ crontab -e
 
 ## CONTRIBUTING:
 
-* Fork Windows Deploy Script
+* Fork WordPress Backups
 * Create a topic branch - `git checkout -b my_branch`
 * Rebase your branch so that all your changes are reflected in one
   commit
