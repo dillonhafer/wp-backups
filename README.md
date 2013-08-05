@@ -37,7 +37,7 @@ rake wp:backup:weekly
 **Restores database to latest backup.**
 
 ```bash
-rake wp:backup:restore
+rake wp:restore:latest
 ```
 
 **Setup weekly/daily crontab**
