@@ -49,4 +49,4 @@ crontab -e
 Copyright
 ---------
 
-Copyright (c) 2013 Boondock Walker.
+Copyright (c) 2013 Dillon Hafer.
