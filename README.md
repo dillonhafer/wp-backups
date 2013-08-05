@@ -12,12 +12,6 @@ Setup
 
 For this app to function in the Rakefile in this project needs to be copied to the home directory on bluehost:
 
-1. Create a [Stripe.com](https://stripe.com/) account.
-
-2. Create a [Parse.com](https://parse.com/) account. Once you have the Parse.com account you will need to make a "Parse App" for each environment you wish to use.
-
-***The below example files should be replaced and updated with the correct credentials***
-
 ```bash
 scp Rakefile user@bluehost:
 ```
