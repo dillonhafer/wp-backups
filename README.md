@@ -5,24 +5,24 @@ WordPress Backups
 About
 -----
 
-This is a simple bash script for automatic database and file backups, and an easy way to restore backups too. It looks at wp-config.php for the database configuration needed.
+This is a simple bash script for automatic database and file backups. It looks at wp-config.php for the database configuration needed.
 
 It does four things:
 
 1. Create a MySQL dump into wp-backups/daily directory.
 2. Create a .tar.gz file of the site into wp-backups/daily directory.
-3. The weekly task copies the latest .sql file and .tar.gz file from the daily directory into the wp-backups/weekly directory only on Sundays.
+3. Only on Sundays, the weekly task copies the latest .sql file and .tar.gz file from the daily directory into the wp-backups/weekly directory.
 4. Keeps only the last five backups in daily and weekly folders.
 
 Setup
 -----
 
-You will need to have Ruby >= 1.8.7 to use. Simply FTP the script to the site's root directory of your WordPress install and make it executable (i.e. chmod +x wp-backup.sh), and then create a cron job to run it everyday.
+You will need to have Ruby >= 1.8.7 to use (I'm working on removing this dependancy). Simply FTP the script to the site's root directory of your WordPress install and make it executable (i.e. chmod +x wp-backup.sh), and then create a cron job to run it everyday.
 
-Rake Tasks
+Script's Tasks
 ----------
 
-**Creates a daily, and a weekly backup on Sundays.**
+**Creates a database and website backup.**
 
 ```bash
 ./wp-backup.sh
