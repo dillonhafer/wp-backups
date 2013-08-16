@@ -1,12 +1,8 @@
 #!/bin/bash
 # Check if running in WordPress directory
-if [ ! -f wp-config.php ]; then
-    echo ""
-    echo    "  **************************************************"
-    echo -e "  *  \033[01;36mThis script must be run from wordpress root!\033[01;37m  *"
-    echo    "  **************************************************"
-    echo ""
-    exit 1
+if [ ! -f wp-config.php ]; then    
+  echo "This script must be run from the wordpress site root folder."  
+  exit 1
 fi
 
 # Setup variables
