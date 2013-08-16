@@ -6,9 +6,9 @@ if [ ! -f wp-config.php ]; then
 fi
 
 # Setup variables
-WP_USERNAME=$(ruby -e "puts /DB_USER', '([^']+)'/.match(File.read('wp-config.php'))[1]")
-WP_DATABASE=$(ruby -e "puts /DB_NAME', '([^']+)'/.match(File.read('wp-config.php'))[1]")
-WP_PASSWORD=$(ruby -e "puts /DB_PASSWORD', '([^']+)'/.match(File.read('wp-config.php'))[1]")
+WP_USERNAME=$(grep -oEi "DB_USER', '[^']+" wp-config.php | sed s/DB_USER\',\ \'//)
+WP_DATABASE=$(grep -oEi "DB_NAME', '[^']+" wp-config.php | sed s/DB_NAME\',\ \'//)
+WP_PASSWORD=$(grep -oEi "DB_PASSWORD', '[^']+" wp-config.php | sed s/DB_PASSWORD\',\ \'//)
 WP_DATE=$(date +"%Y%m%d%H%M%S")
 
 # Check for backup directory

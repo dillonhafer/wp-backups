@@ -17,7 +17,7 @@ It does four things:
 Setup
 -----
 
-You will need to have Ruby >= 1.8.7 to use (I'm working on removing this dependancy). Simply FTP the script to the site's root directory of your WordPress install and make it executable (i.e. chmod +x wp-backup.sh), and then create a cron job to run it everyday.
+Simply FTP the script to the site's root directory of your WordPress install and make it executable (i.e. chmod +x wp-backup.sh), and then create a cron job to run it everyday.
 
 Script's Tasks
 ----------
