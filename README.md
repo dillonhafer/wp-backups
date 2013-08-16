@@ -31,13 +31,14 @@ Script's Tasks
 **Setup weekly/daily crontab**
 
 ```bash
+chmod +x /path/to/wordpress/site/wp-backup.sh
 crontab -e
 ```
 
 **Crontab format**
 
 ```bash
-0 0 * * * /path/to/wordpress/site/./wp-backup.sh
+0 0 * * * /path/to/wordpress/site/wp-backup.sh
 ```
 
 ## CONTRIBUTING:

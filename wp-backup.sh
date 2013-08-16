@@ -1,4 +1,17 @@
 #!/bin/bash
+if [ ! -f wp-config.php ]; then
+    echo ""
+    echo    "  **************************************************"
+    echo -e "  *  \033[01;36mThis script must be run from wordpress root!\033[01;37m  *"
+    echo    "  **************************************************"
+    echo ""
+    exit 1
+fi
+
+# Check if running as root
+if [ "$(id -u)" != "0" ]; then
+fi
+
 WP_USERNAME=$(ruby -e "puts /DB_USER', '([^']+)'/.match(File.read('wp-config.php'))[1]")
 WP_DATABASE=$(ruby -e "puts /DB_NAME', '([^']+)'/.match(File.read('wp-config.php'))[1]")
 WP_PASSWORD=$(ruby -e "puts /DB_PASSWORD', '([^']+)'/.match(File.read('wp-config.php'))[1]")
