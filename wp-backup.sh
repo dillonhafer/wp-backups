@@ -1,4 +1,5 @@
 #!/bin/bash
+# Check if running in WordPress directory
 if [ ! -f wp-config.php ]; then
     echo ""
     echo    "  **************************************************"
@@ -8,10 +9,7 @@ if [ ! -f wp-config.php ]; then
     exit 1
 fi
 
-# Check if running as root
-if [ "$(id -u)" != "0" ]; then
-fi
-
+# Setup variables
 WP_USERNAME=$(ruby -e "puts /DB_USER', '([^']+)'/.match(File.read('wp-config.php'))[1]")
 WP_DATABASE=$(ruby -e "puts /DB_NAME', '([^']+)'/.match(File.read('wp-config.php'))[1]")
 WP_PASSWORD=$(ruby -e "puts /DB_PASSWORD', '([^']+)'/.match(File.read('wp-config.php'))[1]")
