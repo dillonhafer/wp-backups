@@ -38,7 +38,7 @@ crontab -e
 **Crontab format**
 
 ```bash
-0 0 * * * /path/to/wordpress/site/wp-backup.sh
+0 0 * * * cd /path/to/wordpress/site/wp-backup.sh && /path/to/wordpress/site/wp-backup.sh
 ```
 
 ## CONTRIBUTING:
