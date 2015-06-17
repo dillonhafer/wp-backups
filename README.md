@@ -61,12 +61,6 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-## Credits
-
-[![Boondock Walker](http://www.boondockwalker.com/bw-logo.png)](http://www.boondockwalker.com)
-
-WordPress Backups is maintained by [Boondock Walker](http://www.boondockwalker.com)
-
 ## License
 
-WordPress Backups is Copyright © 2013 Dillon Hafer and Boondock Walker, LLC. It is free software, and may be redistributed under the terms specified in the MIT-LICENSE file.
+WordPress Backups is Copyright © 2013 Dillon Hafer. It is free software, and may be redistributed under the terms specified in the MIT-LICENSE file.
